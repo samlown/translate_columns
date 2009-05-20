@@ -10,8 +10,6 @@ module Translate
       mod.extend(ClassMethods)
     end
   
-    DEFAULT_LOCALE_CLASS_NAME = 'Locale'
-    
     # methods used in the class definition
     module ClassMethods
            
@@ -20,17 +18,12 @@ module Translate
       # 
       # Possible options, after the columns, include:
       # 
-      # * :locale_class - String of the name of the locale class used to determine
-      # the current language in use. This overrides the 
-      # Translate::Columns::DEFAULT_LOCALE_CLASS_NAME constant.
-      # * :foreign_key - Name of the field in the parents translation table
-      # of the locale. This defaults to the current locale class's name with 
-      # +_id+ on the end, e.g. 'locale_id' for 'Locale'
+      # * :locale_field - Name of the field in the parents translation table
+      # of the locale. This defaults to 'locale'.
       #
       def translate_columns( *options )
       
-        locale_class = Translate::Columns::DEFAULT_LOCALE_CLASS_NAME
-        locale_foreign_key = nil
+        locale_field = 'locale'
         
         columns = [ ]
         if ! options.is_a? Array
@@ -42,40 +35,8 @@ module Translate
             columns << opt
           elsif opt.is_a? Hash
             # Override the locale class if set.
-            locale_class = opt[:locale_class] if opt[:locale_class]
-            locale_foreign_key = opt[:foreign_key]
+            locale_field = opt[:locale_field]
           end
-        end
-        
-        # Perform some checks on the Locale class to ensure its for real
-        locale_class = locale_class.constantize
-        begin
-          locale_class.global
-        rescue
-          raise "The locale class '#{locale_class}' does not provide a class method named 'global'."
-        end
-        if ! locale_class.method_defined? :id
-          raise "No 'id' method provided by Locale."
-        elsif ! locale_class.method_defined? 'master?'
-          raise "Locale class does not provide 'master?' method."
-        end
-        
-        # Create a semi-hidden method used to get hold of the locale class
-        define_method '_locale_class' do
-          locale_class
-        end
-        
-        define_method '_locale_foreign_key' do
-          if locale_foreign_key.blank?
-            locale_class.to_s.underscore + '_id'
-          else
-            locale_foreign_key
-          end
-        end
-        
-        # The name of the association used by the translation table
-        define_method '_locale_association' do
-          locale_class.to_s.underscore
         end
 
         define_method 'columns_to_translate' do
@@ -84,7 +45,6 @@ module Translate
         
         # set the instance Methods first
         include Translate::Columns::InstanceMethods
-
                
         # Generate a module containing methods that override access 
         # to the ActiveRecord methods.
@@ -93,6 +53,8 @@ module Translate
         mod = Module.new do | m |
           
           columns.each do | column |
+
+            next if ['id', locale_field].include?(column.to_s)
           
             # This is strange, so allow me to explain:
             #  We define access to the original method and its super,
@@ -113,7 +75,7 @@ module Translate
               super()
             end
             
-            alias_method("#{column}_default", column)
+            alias_method("#{column}_before_translation", column)
             
             # overwrite accessor to read
             define_method("#{column}") do
@@ -153,35 +115,21 @@ module Translate
     # Methods that are specific to the current class
     # and only called when translate_columns is used
     module InstanceMethods
-      
-      # The locale variable is used by the translation function
-      # to determine if a translation should be used.
-      # If no locale has been set for this object, the Locale
-      # class is checked if one has been set globally.
-      # If a global is found, the object locale is set apropriatly.
-      # Additionally, if the locale has the default value set to
-      # true, it will not be used!
+     
+      # Provide the locale which is currently in use with the object
+      # or nil if we're using the default translation
       def locale
-        if @locale.nil? and ! _locale_class.global.nil?
-          @locale = _locale_class.global
-        end
-        if @locale and ! @locale.master?
-          return @locale
-        end
-        return nil
+        I18n.locale.to_s == I18n.default_locale.to_s ? nil : (@locale ||= I18n.locale.to_s)
       end
       
       # Setting the locale will always enable translation.
       # If set to nil the global locale is used.
-      def locale=(val)
+      def locale=(locale)
         @disable_translation = false
-        return if (! val)
-        if (val.is_a?(Integer))
-          @locale = _locale_class.find_by_id(val)
-          raise "Invalid id provided to search for locale object." if @locale.nil?
-        else
-          @locale = val
-        end
+        return unless locale.to_s.empty?
+        # TODO some checks for available translations would be nice.
+        # I18n.available_locales only available as standard with rails 2.3
+        @locale = locale.to_s
       end
       
       # Do not allow translations!
@@ -192,25 +140,16 @@ module Translate
       # If the current object has a locale set, return 
       # a translation object from the translations set
       def translation
-        if ((! @disable_translation) and locale)
-          if (! (@translation and (@translation.send(_locale_foreign_key) == locale.id)))
+        if !@disable_translation and locale
+          if !@translation || (@translation.locale != locale)
             # try to find entity in translations array
-            @translation = nil
-            self.translations.each do | t |
-              if (t.send(_locale_foreign_key) == locale.id)
-                @translation = t
-                break;
-              end
-            end
-            # @translation = self.translations.find(:first, :conditions=>['locale_id = ?', locale.id])
-            if (! @translation)
-              @translation = self.translations.build()
-              @translation.send("#{_locale_association}=", locale)
-            end
+            @translation = translations.find_by_locale(locale)
+            @translation = self.translations.build(:locale => locale) unless @translation
           end
-          return @translation
+          @translation
+        else
+          nil
         end
-        return nil
       end
       
       # As this is included in a mixin, a "super" call from inside the
