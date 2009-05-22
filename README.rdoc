@@ -137,7 +137,7 @@ the Rails I18n extension, this is no longer necessary.
 
 == Upgrading
 
-If your using an older version of Translate Columns, then you'll need to perform an
+If you're using an older version of Translate Columns, then you'll need to perform an
 upgrade and migration to use the fabulous new I18n Rails code. Fortunately, this is
 very easy to do.
 

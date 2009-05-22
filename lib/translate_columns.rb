@@ -156,16 +156,16 @@ module Translate
       # child (inheriting) class will infact look here before looking to
       # ActiveRecord for the real 'save'. This method should therefore
       # be safely overridden if needed.      
-      def save
+      def save(options = nil)
         save_and_disable_translation
-        r = super
+        r = super(options)
         enable_translation
         r
       end
       
-      def save!
+      def save!(options = nil)
         save_and_disable_translation!
-        r = super
+        r = super(options)
         enable_translation
         r
       rescue
