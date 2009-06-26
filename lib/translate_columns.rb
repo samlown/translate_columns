@@ -116,20 +116,20 @@ module Translate
     # and only called when translate_columns is used
     module InstanceMethods
      
-      # Provide the locale which is currently in use with the object
-      # or nil if we're using the default translation
+      # Provide the locale which is currently in use with the object or the current global locale.
+      # If the default is in use, always return nil.
       def locale
-        I18n.locale.to_s == I18n.default_locale.to_s ? nil : (@locale ||= I18n.locale.to_s)
+        locale = @locale || I18n.locale.to_s
+        locale == I18n.default_locale.to_s ? nil : locale
       end
       
       # Setting the locale will always enable translation.
       # If set to nil the global locale is used.
       def locale=(locale)
         @disable_translation = false
-        return unless locale.to_s.empty?
         # TODO some checks for available translations would be nice.
         # I18n.available_locales only available as standard with rails 2.3
-        @locale = locale.to_s
+        @locale = locale.nil? ? nil : locale.to_s
       end
       
       # Do not allow translations!
