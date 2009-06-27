@@ -129,7 +129,7 @@ module Translate
         @disable_translation = false
         # TODO some checks for available translations would be nice.
         # I18n.available_locales only available as standard with rails 2.3
-        @locale = locale.nil? ? nil : locale.to_s
+        @locale = locale.to_s.empty? ? nil : locale.to_s
       end
       
       # Do not allow translations!
