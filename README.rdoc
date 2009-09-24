@@ -235,8 +235,11 @@ A useful +named_scope+ could be as follows:
 
  @posts = Post.for_current_locale.paginate
 
+Changing locale of an object after it has been created will cause its translations to be ignored, but 
+by emptying the locale value the translations should work as before.
 Of course, if you don't want this funcionality simply do not add a locale attribute or method to 
 the parent model.
+
 
 == How it works
 
