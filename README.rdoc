@@ -23,6 +23,14 @@ added to an existing application.
 
 == Updates
 
+=== 23rd September 2009
+
+- Testing finally added (hope to add more tests soon)
+- Validations now only performed by the parent model
+- Changed namespace to TranslateColumns (as opposed to Translate::Columns)
+- Parent model's +locale+ variable changed to +translation_locale+ so that it can be
+added as a column/attribute if needed.
+
 === 20th May 2009
 
 - Finally got round to moving to github
