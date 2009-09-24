@@ -1,0 +1,14 @@
+translation1:
+  id: 1
+  document_id: 1
+  locale: es
+  title: Este es el titulo de un documento en Español
+  body: Nada
+
+translation2:
+  id: 2
+  document_id: 1
+  locale: fr
+  title: Un title en francais
+  body:
+  

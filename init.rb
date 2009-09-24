@@ -3,5 +3,5 @@
 require 'translate_columns'
 
 ActiveRecord::Base.class_eval do
-  include Translate::Columns
+  include TranslateColumns
 end

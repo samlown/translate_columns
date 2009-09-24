@@ -1,0 +1,12 @@
+document1:
+  id: 1
+  title: Test Document Number 1
+  body: This is a test document with some kind of body.
+  published_at: "2009-09-23 21:53:04"
+
+document2:
+  id: 2
+  title: Test Document Number 2
+  body: This is a second test document with some random content for the body.
+  published_at: "2009-09-23 21:53:46"
+
