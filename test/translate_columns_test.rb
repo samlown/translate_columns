@@ -1,5 +1,6 @@
-require 'test/unit'
 require 'test/lib/activerecord_test_helper'
+require 'test/unit'
+require 'mocha'
 require 'init'
 
 class TranslateColumnsTest < Test::Unit::TestCase 
@@ -121,5 +122,28 @@ class TranslateColumnsTest < Test::Unit::TestCase
     assert doc.errors.on(:title)
   end
 
+  def test_locale_attribute_detection
+    doc = Document.find(:first)
+    assert !doc.has_locale_value?
+    doc.locale = "en"
+    assert doc.has_locale_value?
+  end
+
+  def test_locale_attribute_detection_without_attribute
+    doc = Document.find(:first)
+    doc.locale = "en"
+    doc.stubs(:respond_to?).with(:locale).returns(false)
+    assert !doc.has_locale_value?
+  end
+
+  def test_create_new_document_with_specific_locale
+    I18n.locale = 'es'
+    doc = nil
+    assert_nothing_thrown do
+      doc = Document.new(:locale => 'es', :title => "A new document", :body => "Test Body")
+    end
+    assert doc.locale, 'es'
+    assert doc.save
+  end
   
 end

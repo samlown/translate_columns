@@ -1,5 +1,6 @@
 ActiveRecord::Schema.define do
   create_table "documents", :force => true do |t|
+    t.column "locale", :string, :length => 8
     t.column "title", :string
     t.column "body",  :text
     t.column "published_at", :datetime

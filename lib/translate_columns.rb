@@ -51,6 +51,7 @@ module TranslateColumns
       # Rails magic to override the normal save process
       alias_method_chain :save, :translation
       alias_method_chain :save!, :translation
+      alias_method_chain :attributes=, :locale
 
       # Generate a module containing methods that override access 
       # to the ActiveRecord methods.
@@ -133,7 +134,7 @@ module TranslateColumns
     # Setting the locale will always enable translation.
     # If set to nil the global locale is used.
     def translation_locale=(locale)
-      @disable_translation = false
+      enable_translation
       # TODO some checks for available translations would be nice.
       # I18n.available_locales only available as standard with rails 2.3
       @translation_locale = locale.to_s.empty? ? nil : locale.to_s
@@ -143,16 +144,29 @@ module TranslateColumns
     def disable_translation
       @disable_translation = true
     end
+    def enable_translation
+      @disable_translation = false 
+    end     
+   
+    # Important check to see if the parent has a locale method.
+    # If so, translations should be disabled if it is set to something!
+    def has_locale_value?
+      respond_to?(:locale) && !self.locale.to_s.empty?
+    end
+
+    # determine if the conditions are set for a translation to be used
+    def translation_enabled?
+      (!@disable_translation && translation_locale) and !has_locale_value? 
+    end
     
-    # If the current object has a locale set, return 
-    # a translation object from the translations set
+    # Provide a translation object based on the parent and the translation_locale
+    # current value.
     def translation
-      if !@disable_translation and translation_locale
+      if translation_enabled? 
         if !@translation || (@translation.locale != translation_locale)
-          # try to find entity in translations array
           raise MissingParent, "Cannot create translations without a stored parent" if new_record?
-          @translation = translations.find_by_locale(translation_locale)
-          @translation = self.translations.build(:locale => translation_locale) unless @translation
+          # try to find translation or build a new one
+          @translation = translations.find_by_locale(translation_locale) || translations.build(:locale => translation_locale)
         end
         @translation
       else
@@ -195,13 +209,19 @@ module TranslateColumns
       raise
     end
 
-    
-    protected
+    # Override the default mass assignment method so that the locale variable is always
+    # given preference.
+    def attributes_with_locale=(new_attributes, guard_protected_attributes = true)
+      return if new_attributes.nil?
+      attributes = new_attributes.dup
+      attributes.stringify_keys!
 
-    def enable_translation
-      @disable_translation = false 
-    end     
-           
+      attributes = remove_attributes_protected_from_mass_assignment(attributes) if guard_protected_attributes
+      send(:locale=, attributes["locale"]) if attributes.has_key?("locale") and respond_to?(:locale=)
+
+      send(:attributes_without_locale=, attributes, guard_protected_attributes)
+    end
+
   end
   
 end

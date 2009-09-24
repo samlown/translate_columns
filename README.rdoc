@@ -23,13 +23,16 @@ added to an existing application.
 
 == Updates
 
+=== 24th September 2009
+
+- Added support for setting the locale variable on the parent, which disables translations. See below.
+
 === 23rd September 2009
 
 - Testing finally added (hope to add more tests soon)
 - Validations now only performed by the parent model
 - Changed namespace to TranslateColumns (as opposed to Translate::Columns)
-- Parent model's +locale+ variable changed to +translation_locale+ so that it can be
-added as a column/attribute if needed.
+- Parent model's +locale+ variable changed to +translation_locale+ so that it can be added as a column/attribute if needed.
 
 === 20th May 2009
 
@@ -176,9 +179,8 @@ won't even notice the plugin is there.
 
 Here's a really basic example of what we can do on the console.
 
- Loading development environment.
- >> I18n.locale = 'en'          # First try default language
- => "en"
+ >> I18n.locale = I18n.default_locale          # First try default language
+ => :en
  >> doc = Document.find(:first)
    -- output hidden --
  >> doc.title
@@ -205,6 +207,36 @@ Here's a really basic example of what we can do on the console.
 As can be seen, just by setting the locale we are able to edit the data
 without having to worry about the details.
 
+The current version also has support for disabling translations by giving the 
+parent object a +locale+ field and setting it to something. This is actually a
+very powerful feature as it allows new objects to be created under a specific locale
+and filtered as such. A typical example would be a blog where most of the posts 
+you'd like to be translated into several languages, but occaisionly some posts will only
+be relevant for a specific region:
+
+ >> I18n.locale = I18n.default_locale
+ >> post = Post.new(:title => "Example") # WIN
+ >>
+ >> I18n.locale = 'es'
+ >> post = Post.new(:title => "Ejemplo") # FAIL
+ TranslateColumns::MissingParent: Cannot create translations without a stored parent
+ >> 
+ >> post = Post.new(:locale => 'es', :title => "Ejemplo") # WIN
+ >>
+ >> # Provide posts, with either a translation of for the current locale
+ >> posts = Post.paginate(:conditions => ['posts.locale IS NULL OR posts.locale = ?', I18n.locale])
+ 
+A useful +named_scope+ could be as follows:
+
+ class Post < ActiveRecord::Base
+   # ... translate columns stuff ...
+   named_scope :for_current_locale, :conditions => ['posts.locale IS NULL OR posts.locale = ?', I18n.locale]
+ end
+
+ @posts = Post.for_current_locale.paginate
+
+Of course, if you don't want this funcionality simply do not add a locale attribute or method to 
+the parent model.
 
 == How it works
 
