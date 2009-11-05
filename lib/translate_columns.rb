@@ -202,7 +202,7 @@ module TranslateColumns
         save_without_translation!
         enable_translation
       else
-        raise RecordInvalid.new(self) 
+        raise ActiveRecord::RecordInvalid.new(self) 
       end
     rescue
       enable_translation

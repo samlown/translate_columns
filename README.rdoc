@@ -224,13 +224,13 @@ be relevant for a specific region:
  >> post = Post.new(:locale => 'es', :title => "Ejemplo") # WIN
  >>
  >> # Provide posts, with either a translation of for the current locale
- >> posts = Post.paginate(:conditions => ['posts.locale IS NULL OR posts.locale = ?', I18n.locale])
+ >> posts = Post.paginate(:conditions => ['posts.locale IS NULL OR posts.locale = ?', I18n.locale.to_s])
  
 A useful +named_scope+ could be as follows:
 
  class Post < ActiveRecord::Base
    # ... translate columns stuff ...
-   named_scope :for_current_locale, :conditions => ['posts.locale IS NULL OR posts.locale = ?', I18n.locale]
+   named_scope :for_current_locale, :conditions => ['posts.locale IS NULL OR posts.locale = ?', I18n.locale.to_s]
  end
 
  @posts = Post.for_current_locale.paginate
