@@ -98,7 +98,7 @@ module TranslateColumns
             if (translation)
               translation.send("#{column}_before_type_cast")
             else
-              super
+              super()
             end
           end
           
