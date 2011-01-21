@@ -1,7 +1,11 @@
-require 'test/lib/activerecord_test_helper'
+# encoding: utf-8
+
+require 'bundler/setup'
 require 'test/unit'
 require 'mocha'
-require 'init'
+
+require 'activerecord_test_helper'
+require 'translate_columns'
 
 class TranslateColumnsTest < Test::Unit::TestCase 
 
@@ -111,7 +115,7 @@ class TranslateColumnsTest < Test::Unit::TestCase
     doc = Document.find(:first)
     doc.title = "a"
     assert !doc.save
-    assert doc.errors.on(:title)
+    assert !doc.errors[:title].empty?
   end
 
   def test_failed_validations_on_translation
@@ -119,7 +123,7 @@ class TranslateColumnsTest < Test::Unit::TestCase
     doc = Document.find(:first)
     doc.title = "a"
     assert !doc.save
-    assert doc.errors.on(:title)
+    assert !doc.errors[:title].empty?
   end
 
   def test_locale_attribute_detection

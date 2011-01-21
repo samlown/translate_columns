@@ -1,5 +1,6 @@
 class Document < ActiveRecord::Base
-  
+  include TranslateColumns
+
   has_many :translations, :class_name => 'DocumentTranslation'
   translate_columns :title, :body
 

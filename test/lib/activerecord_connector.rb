@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'active_record'
 require 'active_record/fixtures'
 

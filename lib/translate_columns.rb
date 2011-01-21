@@ -1,7 +1,8 @@
-# 
+# encoding: utf-8
+#
 # TranslateColumns
 # 
-# Copyright (c) 2007 Samuel Lown <me@samlown.com>
+# Copyright (c)2007-2011 Samuel Lown <me@samlown.com>
 # 
 module TranslateColumns
  
@@ -183,7 +184,7 @@ module TranslateColumns
     # before saving. This means the base records validation checks will always
     # be used.
     #
-    def save_with_translation(perform_validation = true)
+    def save_with_translation(*args)
       if perform_validation && valid? || !perform_validation
         translation.save(false) if (translation)
         disable_translation
@@ -216,12 +217,11 @@ module TranslateColumns
       attributes = new_attributes.dup
       attributes.stringify_keys!
 
-      attributes = remove_attributes_protected_from_mass_assignment(attributes) if guard_protected_attributes
+      attributes = sanitize_for_mass_assignment(attributes) if guard_protected_attributes
       send(:locale=, attributes["locale"]) if attributes.has_key?("locale") and respond_to?(:locale=)
 
       send(:attributes_without_locale=, attributes, guard_protected_attributes)
     end
 
   end
-  
 end
