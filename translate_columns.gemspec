@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.email = %q{me@samlown.com}
   s.extra_rdoc_files = [
     "LICENSE",
-    "README"
+    "README.rdoc"
   ]
   s.homepage = %q{http://github.com/samlown/translate_columns}
   s.rubygems_version = %q{1.3.7}

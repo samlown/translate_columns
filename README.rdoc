@@ -1,6 +1,6 @@
 = Translate Columns Plugin
 
-Copyright (c) 2007-2009 Samuel Lown <me (AT) samlown.com>
+Copyright (c) 2007-2011 Samuel Lown <me (AT) samlown.com>
 
 This Plugin is released under the MIT license, as Rails itself. Please see the 
 attached LICENSE file for further details.
@@ -23,6 +23,12 @@ added to an existing application.
 
 == Updates
 
+=== v1.1 - 21st January 2011
+
+- Now only supports ActiveRecord 3
+- Converted to gem
+- +include TranslateColumns+ now required on a per model basis
+
 === 24th September 2009
 
 - Added support for setting the locale variable on the parent, which disables translations. See below.
@@ -39,10 +45,8 @@ added to an existing application.
 - Finally got round to moving to github
 - Added support for the rails 2.2 I18n stuff (WIN!)
 
-*WARNING* If you're using and older version of Rails (< 2.2) or upgrading,
-translate columns has been updated to use the new I18n code *ONLY* and will not
-work with old code! See Upgrade section for a few hints.
-
+*WARNING* Translate Columns will now only work with Rails 3 as a gem. For older
+2.3 projects, use as a plugin with the v_1.0 release tag.
 
 == Architecture
 
@@ -136,6 +140,7 @@ Now for the hard part :-) Re-using the example above for documents, to use the
 plugin modify the model so that it looks like the following:
 
  class Document < ActiveRecord::Base
+   include TranslateColumns
    has_many :translations, :class_name => 'DocumentTranslation'
    translate_columns :title, :sub_title, :body
  end
@@ -148,7 +153,7 @@ the Rails I18n extension, this is no longer necessary.
 
 == Upgrading
 
-If you're using an older version of Translate Columns, then you'll need to perform an
+If you're using a realy old version of Translate Columns, then you'll need to perform an
 upgrade and migration to use the fabulous new I18n Rails code. Fortunately, this is
 very easy to do.
 
