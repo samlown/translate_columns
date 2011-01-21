@@ -185,10 +185,11 @@ module TranslateColumns
     # be used.
     #
     def save_with_translation(*args)
+      perform_validation = args.is_a?(Hash) ? args[:validate] : args
       if perform_validation && valid? || !perform_validation
-        translation.save(false) if (translation)
+        translation.save(*args) if (translation)
         disable_translation
-        save_without_translation(false)
+        save_without_translation(*args)
         enable_translation
         true
       else
