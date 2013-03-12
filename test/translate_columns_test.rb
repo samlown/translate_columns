@@ -2,7 +2,7 @@
 
 require 'bundler/setup'
 require 'test/unit'
-require 'mocha'
+require "mocha/setup"
 
 require 'activerecord_test_helper'
 require 'translate_columns'
@@ -12,11 +12,11 @@ class TranslateColumnsTest < Test::Unit::TestCase
   include ActiverecordTestHelper
 
   def setup
-    @docs = Fixtures.create_fixtures(FIXTURES_PATH, ['documents', 'document_translations'])
+    @docs = ActiveRecord::Fixtures.create_fixtures(FIXTURES_PATH, ['documents', 'document_translations'])
   end
 
   def teardown
-    Fixtures.reset_cache
+    ActiveRecord::Fixtures.reset_cache
   end
 
   def test_basic_document_fields
