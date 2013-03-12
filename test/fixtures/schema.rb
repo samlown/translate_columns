@@ -15,4 +15,3 @@ ActiveRecord::Schema.define do
     t.timestamps
   end
 end
-
