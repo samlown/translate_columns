@@ -167,7 +167,7 @@ module TranslateColumns
         if !@translation || (@translation.locale != translation_locale)
           raise MissingParent, "Cannot create translations without a stored parent" if new_record?
           # try to find translation or build a new one
-          @translation = translations.find_by_locale(translation_locale) || translations.build(:locale => translation_locale)
+          @translation = translations.where(:locale => translation_locale).first || translations.build(:locale => translation_locale)
         end
         @translation
       else

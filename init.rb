@@ -1,3 +1,1 @@
-
 require 'translate_columns'
-
