@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    translate_columns (1.1.1)
+    translate_columns (1.2.0)
       activerecord (~> 3.2.12)
 
 GEM

@@ -1,6 +1,6 @@
 = Translate Columns Plugin
 
-Copyright (c) 2007-2011 Samuel Lown <me (AT) samlown.com>
+Copyright (c) 2007-2013 Samuel Lown <me (AT) samlown.com>
 
 This Plugin is released under the MIT license, as Rails itself. Please see the 
 attached LICENSE file for further details.
@@ -22,6 +22,10 @@ really unlucky), and can be simply added. Indeed, the plugin was written to be
 added to an existing application.
 
 == Updates
+
+=== v1.2 - 12th March 2013
+
+- Updated to support Rails 3.2.12. Please hold back if you are not running this version of Rails. Thanks Matthias Frick (@mattherick)
 
 === v1.1 - 21st January 2011
 
