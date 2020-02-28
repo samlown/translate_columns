@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   
   s.add_dependency("activerecord", "~> 3.2.12")
-  s.add_development_dependency("rake", "~> 10.0.3")
+  s.add_development_dependency("rake", "~> 13.0.1")
   s.add_development_dependency("mocha", "~> 0.13.3")
   s.add_development_dependency("sqlite3", "~> 1.3.7")
 end
