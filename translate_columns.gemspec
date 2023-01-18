@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.require_paths = ["lib"]
   
-  s.add_dependency("activerecord", "~> 3.2.12")
+  s.add_dependency("activerecord", ">= 3.2.12", "< 7.1.0")
   s.add_development_dependency("rake", "~> 10.0.3")
   s.add_development_dependency("mocha", "~> 0.13.3")
   s.add_development_dependency("sqlite3", "~> 1.3.7")
